@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Delay (Async)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      outline: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: rgb(12, 12, 12);
+      color: rgb(238, 238, 238);
+      font-family: 'Comic Sans MS', Arial, Helvetica, sans-serif;
+    }
+
+    #app {
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+
+      text-align: center;
+    }
+
+    select, input, textarea {
+      padding: 8px;
+      margin: 4px;
+      background-color: black;
+      color: whitesmoke;
+      border: 0;
+      resize: none;
+    }
+
+    .header {
+      display: flex;
+      width: 100%;
+      height: 64px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    textarea {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="header">
+      <h1>Typing Delay</h1>
+    </div>
+    <select v-model="delayType">
+      <option value="constant" selected>Constant Delay</option>
+      <option value="random">Random Delay In Range</option>
+    </select>
+    <br>
+    <input v-model="delayDuration1" type="number" placeholder="Delay">
+    <span v-if="delayType == 'random'">
+      -
+      <input v-model="delayDuration2" type="number" placeholder="Delay">
+    </span>
+    <br>
+    <textarea v-model="textContent" @keydown="onKeyDown" readonly cols="50" rows="10"></textarea>
+  </div>
+  <script src="https://unpkg.com/vue@next"></script>
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          delayType: "constant",
+          delayDuration1: 100,
+          delayDuration2: 250,
+          textContent: ""
+        }
+      },
+      methods: {
+        onKeyDown(e) {
+          console.log(e)
+          setTimeout(() => {
+            if (e.key.length == 1) {
+              this.textContent += e.key;
+            } else if (e.key == "Backspace") {
+              this.textContent = this.textContent.slice(0, -1);
+            } else if (e.key == "Enter") {
+              this.textContent += "\n";
+            }
+          }, this.delayDuration());
+        },
+        delayDuration() {
+          return this.delayType == "constant" ? this.delayDuration1 : getRandomInt(this.delayDuration1, this.delayDuration2);
+        }
+      },
+    });
+    app.mount("#app");
+    function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+  </script>
+</body>
+</html>
